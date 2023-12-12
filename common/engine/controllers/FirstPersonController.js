@@ -12,6 +12,7 @@ export class FirstPersonController {
         maxSpeed = 5,
         decay = 0.99999,
         pointerSensitivity = 0.002,
+        // aim = [0, 0, 0]
     } = {}) {
         this.node = node;
         this.domElement = domElement;
