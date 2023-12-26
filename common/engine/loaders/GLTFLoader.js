@@ -176,8 +176,6 @@ export class GLTFLoader {
         }
         if (gltfSpec.sampler !== undefined) {
             options.sampler = this.loadSampler(gltfSpec.sampler);
-        } else {
-            options.sampler = new Sampler();
         }
 
         const texture = new Texture(options);
@@ -187,6 +185,7 @@ export class GLTFLoader {
     }
 
     loadMaterial(nameOrIndex) {
+        // Finds material in gltf list "materials" by index specified by primitive
         const gltfSpec = this.findByNameOrIndex(this.gltf.materials, nameOrIndex);
         if (!gltfSpec) {
             return null;
@@ -195,12 +194,15 @@ export class GLTFLoader {
             return this.cache.get(gltfSpec);
         }
 
+        // Loads appropriate material information
         const options = {};
         const pbr = gltfSpec.pbrMetallicRoughness;
         if (pbr) {
+            // Texture is only referenced by one primitive
             if (pbr.baseColorTexture) {
                 options.baseTexture = this.loadTexture(pbr.baseColorTexture.index);
             }
+            // None posses this property.
             if (pbr.metallicRoughnessTexture) {
                 options.metalnessTexture = this.loadTexture(pbr.metallicRoughnessTexture.index);
                 options.roughnessTexture = this.loadTexture(pbr.metallicRoughnessTexture.index);
@@ -210,6 +212,7 @@ export class GLTFLoader {
             options.roughnessFactor = pbr.roughnessFactor;
         }
 
+        // None posses the following three properties.
         if (gltfSpec.normalTexture) {
             options.normalTexture = this.loadTexture(gltfSpec.normalTexture.index);
             options.normalFactor = gltfSpec.normalTexture.scale;
@@ -225,6 +228,7 @@ export class GLTFLoader {
             options.occlusionFactor = gltfSpec.occlusionTexture.strength;
         }
 
+        // Create and return the material.
         const material = new Material(options);
 
         this.cache.set(gltfSpec, material);
@@ -324,19 +328,25 @@ export class GLTFLoader {
             return new Mesh();
         }
 
+        // Loads accessors that are referenced by mesh attributes
         const accessors = {};
         for (const attribute in spec.attributes) {
             accessors[attribute] = this.loadAccessor(spec.attributes[attribute]);
         }
 
+        // Helpers
         const position = accessors.POSITION;
         const texcoords = accessors.TEXCOORD_0;
         const normal = accessors.NORMAL;
-        const tangent = accessors.TANGENT;
+        const tangent = accessors.TANGENT; // is undefined in our model
 
+        // Make space for primirive vertices
         const vertexCount = position.count;
         const vertices = [];
 
+        // VERTEX POSITIONS and other vertex related information
+        // for each vertex it fetches position, textcoord, normal, and tangent
+        // data corespondind to the selected vertex of primitive
         for (let i = 0; i < vertexCount; i++) {
             const options = {};
 
@@ -348,6 +358,7 @@ export class GLTFLoader {
             vertices.push(new Vertex(options));
         }
 
+        // INDICES for indexed geometry
         const indices = [];
         const indicesAccessor = this.loadAccessor(spec.indices);
         const indexCount = indicesAccessor.count;
@@ -356,10 +367,12 @@ export class GLTFLoader {
             indices.push(indicesAccessor.get(i));
         }
 
+        // Retrurns a "primitive" whose data is describet with the Mesh class
         return new Mesh({ vertices, indices });
     }
 
     loadMesh(nameOrIndex) {
+        // Finds mesh in gltf list "meshes" by index
         const gltfSpec = this.findByNameOrIndex(this.gltf.meshes, nameOrIndex);
         if (!gltfSpec) {
             return null;
@@ -368,6 +381,8 @@ export class GLTFLoader {
             return this.cache.get(gltfSpec);
         }
 
+        // Traverses through "primitives" list of the mesh and
+        // creates a new primitive for each element in the list.
         const primitives = [];
         for (const primitiveSpec of gltfSpec.primitives) {
             if (primitiveSpec.mode !== 4 && primitiveSpec.mode !== undefined) {
@@ -375,9 +390,11 @@ export class GLTFLoader {
                 continue;
             }
 
+            // loads vertex related data of primitive
             const options = {};
             options.mesh = this.createMeshFromPrimitive(primitiveSpec);
 
+            // loads material related data of primitive
             if (primitiveSpec.material !== undefined) {
                 options.material = this.loadMaterial(primitiveSpec.material);
             }
@@ -392,6 +409,7 @@ export class GLTFLoader {
     }
 
     loadCamera(nameOrIndex) {
+        // Finds camera in the gltf list "cameras" by index
         const gltfSpec = this.findByNameOrIndex(this.gltf.cameras, nameOrIndex);
         if (!gltfSpec) {
             return null;
@@ -400,6 +418,7 @@ export class GLTFLoader {
             return this.cache.get(gltfSpec);
         }
 
+        // Extracts camera options
         const options = {};
         if (gltfSpec.type === 'perspective') {
             const { aspectRatio, yfov, znear, zfar } = gltfSpec.perspective;
@@ -428,28 +447,37 @@ export class GLTFLoader {
     }
 
     loadNode(nameOrIndex) {
+        // Find node inside the "nodes" gltf list by index
         const gltfSpec = this.findByNameOrIndex(this.gltf.nodes, nameOrIndex);
         if (!gltfSpec) {
             return null;
         }
+        // Fetch gltf object from cache if it is already loaded
         if (this.cache.has(gltfSpec)) {
             return this.cache.get(gltfSpec);
         }
 
         const node = new Node();
 
+        // Extract transformation information from gltf object
+        // and add it to the newly created node.
         node.addComponent(new Transform(gltfSpec));
 
+        // If node is a comlex node consisting of multiple nodes,
+        // the node is recursively constructed by appending
+        // child nodes.
         if (gltfSpec.children) {
             for (const childIndex of gltfSpec.children) {
                 node.addChild(this.loadNode(childIndex));
             }
         }
 
+        // If node is a camera object then it is loaded as a camera.
         if (gltfSpec.camera !== undefined) {
             node.addComponent(this.loadCamera(gltfSpec.camera));
         }
 
+        // If node has a mesh property the mesh is connected to it.
         if (gltfSpec.mesh !== undefined) {
             node.addComponent(this.loadMesh(gltfSpec.mesh));
         }
@@ -459,14 +487,18 @@ export class GLTFLoader {
     }
 
     loadScene(nameOrIndex) {
+        // finds scene by index in "scenes" of glft file 
         const gltfSpec = this.findByNameOrIndex(this.gltf.scenes, nameOrIndex);
         if (!gltfSpec) {
             return null;
         }
+        // if the scene was already loaded it is returned from cache
         if (this.cache.has(gltfSpec)) {
             return this.cache.get(gltfSpec);
         }
 
+        // creates a starting node for scene and recursively appends
+        // child nodes that make up the scene
         const scene = new Node();
         if (gltfSpec.nodes) {
             for (const nodeIndex of gltfSpec.nodes) {
@@ -474,6 +506,8 @@ export class GLTFLoader {
             }
         }
 
+        // in cache we map gltf object representing the scene
+        // to newly created scene graph
         this.cache.set(gltfSpec, scene);
         return scene;
     }
