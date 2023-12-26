@@ -1,15 +1,38 @@
-import { shaders } from "./shaders.js";
-import * as WebGL from "./common/engine/WebGL.js";
-import { GLTFLoader } from "./common/engine/loaders/GLTFLoader.js";
-import { core } from "./common/engine/core.js";
+import { ResizeSystem } from './common/engine/systems/ResizeSystem.js';
+import { UpdateSystem } from './common/engine/systems/UpdateSystem.js';
 
-const canvas = document.getElementById("canvas");
-const gl = canvas.getContext("webgl2");
+import { GLTFLoader } from './common/engine/loaders/GLTFLoader.js';
+import { UnlitRenderer } from './common/engine/renderers/UnlitRenderer.js';
 
-const programs = WebGL.buildPrograms(gl, shaders);
+import { Camera } from './common/engine/core.js';
+
+const canvas = document.querySelector('canvas');
+const renderer = new UnlitRenderer(canvas);
+await renderer.initialize();
 
 const loader = new GLTFLoader();
-await loader.load('./common/models/court/scene.gltf');
+await loader.load('./common/models/basketball/simple/court.gltf'); // load OK.
+console.log(loader.cache);
 
 const scene = loader.loadScene(loader.defaultScene);
-const camera = loader.
+if (!scene) {
+    throw new Error('A default scene is required to run this example');
+}
+
+const camera = scene.find(node => node.getComponentOfType(Camera));
+if (!camera) {
+    throw new Error('A camera in the scene is require to run this example');
+}
+
+function render() {
+    renderer.render(scene, camera);
+}
+ 
+function resize({ displaySize: { width, height }}) {
+    camera.getComponentOfType(Camera).aspect = width / height;
+}
+ 
+new ResizeSystem({ canvas, resize }).start();
+new UpdateSystem({ render }).start();
+ 
+document.querySelector('.loader-container').remove();

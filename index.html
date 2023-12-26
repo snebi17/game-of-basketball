@@ -4,15 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Game of Basketball</title>
+    <title>glTF</title>
 
-    <link rel="stylesheet" href="common/style.css">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="./common/style.css">
+
+    <script src="./lib/gl-matrix-min.js"></script>
+    <script type="module" src="main.js"></script>
 </head>
 <body>
     <div class="fullscreen no-touch">
-        <canvas class="canvas"></canvas>
+        <canvas class="pixelated"></canvas>
     </div>
-    <script src="main.js"></script>
+    <div class="fullscreen overlay loader-container">
+        <div class="loader"></div>
+    </div>
 </body>
 </html>
