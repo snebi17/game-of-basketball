@@ -30,6 +30,6 @@ export function createVertexBuffer(vertices, layout) {
             accessor.set(i, vertex[attribute]);
         }
     }
-
+    
     return buffer;
 }

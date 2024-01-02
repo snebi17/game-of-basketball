@@ -463,7 +463,7 @@ export class GLTFLoader {
         // and add it to the newly created node.
         node.addComponent(new Transform(gltfSpec));
 
-        // If node is a comlex node consisting of multiple nodes,
+        // If node is a complex node consisting of multiple nodes,
         // the node is recursively constructed by appending
         // child nodes.
         if (gltfSpec.children) {
@@ -480,6 +480,11 @@ export class GLTFLoader {
         // If node has a mesh property the mesh is connected to it.
         if (gltfSpec.mesh !== undefined) {
             node.addComponent(this.loadMesh(gltfSpec.mesh));
+        }
+
+        // If node has a name it is added 
+        if (gltfSpec.name !== undefined) {
+            node.name = gltfSpec.name;
         }
 
         this.cache.set(gltfSpec, node);

@@ -4,6 +4,7 @@ export class Node {
         this.children = [];
         this.parent = null;
         this.components = [];
+        this.name = '';
     }
 
     addChild(node) {

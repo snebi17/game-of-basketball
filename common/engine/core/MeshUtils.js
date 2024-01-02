@@ -17,9 +17,9 @@ export function mergeAxisAlignedBoundingBoxes(boxes) {
         min: vec3.clone(boxes[0].min),
         max: vec3.clone(boxes[0].max),
     };
-
+    
     return {
-        min: boxes.reduce(({ min: amin }, { min: bmin }) => vec3.min(amin, amin, bmin), initial),
-        max: boxes.reduce(({ max: amax }, { max: bmax }) => vec3.max(amax, amax, bmax), initial),
+        min: boxes.reduce((a, b) => vec3.min(a, a, b.min), initial.min),
+        max: boxes.reduce((a, b) => vec3.max(a, a, b.max), initial.max),
     };
 }

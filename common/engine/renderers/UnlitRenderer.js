@@ -42,7 +42,7 @@ export class UnlitRenderer extends BaseRenderer {
 
     render(scene, camera) {
         const gl = this.gl;
-
+        
         // mapping size of canvas to values [-1, 1] on x and y axis
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         // sets frame buffer values (all pixels on the screen) to black and
