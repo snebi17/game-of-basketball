@@ -15,6 +15,7 @@ import {
 } from './common/engine/core/MeshUtils.js';
 
 import { Physics } from './common/engine/core/Physics.js';
+import { Crosshair } from './common/engine/addons/Crosshair.js';
 
 
 const canvas = document.querySelector('canvas');
@@ -84,7 +85,7 @@ loader.loadNode('Light_Pillars.002').isStatic = true;
 loader.loadNode('Light_Pillars.003').isStatic = true;
 loader.loadNode('Light_Pillars.004').isStatic = true;
 
-loader.loadNode('Mesh_Bars').isStatic = true;
+// loader.loadNode('Mesh_Bars').isStatic = true;
 
 const physics = new Physics(scene);
 // Calculates bounding boxes of nodes
@@ -125,5 +126,20 @@ gui.add(controller, 'pointerSensitivity', 0.0001, 0.01);
 gui.add(controller, 'maxSpeed', 0, 2);
 gui.add(controller, 'decay', 0, 1);
 gui.add(controller, 'acceleration', 1, 100);
- 
+
+
+const crosshair = new Crosshair(document.getElementById('crosshair'));
+document.addEventListener('mousedown', () => {
+    crosshair.toggleMouseDown();
+    crosshair.updateCrosshairSize();
+});
+document.addEventListener('mouseup', () => {
+    crosshair.toggleMouseDown();
+    crosshair.updateCrosshairSize();
+
+    let currentSize = crosshair.getCurrentSize();
+    console.log(`Crosshair size on mouseup: ${currentSize}px`);
+});
+crosshair.show();
+
 document.querySelector('.loader-container').remove();
