@@ -129,17 +129,6 @@ gui.add(controller, 'acceleration', 1, 100);
 
 
 const crosshair = new Crosshair(document.getElementById('crosshair'));
-document.addEventListener('mousedown', () => {
-    crosshair.toggleMouseDown();
-    crosshair.updateCrosshairSize();
-});
-document.addEventListener('mouseup', () => {
-    crosshair.toggleMouseDown();
-    crosshair.updateCrosshairSize();
-
-    let currentSize = crosshair.getCurrentSize();
-    console.log(`Crosshair size on mouseup: ${currentSize}px`);
-});
 crosshair.show();
 
 document.querySelector('.loader-container').remove();
