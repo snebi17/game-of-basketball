@@ -14,6 +14,9 @@ canvas {
     height: 7px;
     background-color: yellow;
     border-radius: 50%;
-    transition: width 1s, height 1s;
+    transition: width 1s, height 1s, background-color 0.1s;
     display: none;
+}
+#crosshair.large {
+    background-color: red; /* Set the color when it's large */
 }

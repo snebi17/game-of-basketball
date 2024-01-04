@@ -7,6 +7,21 @@ export class Node {
         this.name = '';
     }
 
+    clone() {
+        var newObject = new this.constructor();
+        newObject.children = this.children;
+        newObject.parent = this.parent;
+        newObject.components = this.components.map(component => {
+            if (component && typeof component.clone === 'function') {
+                return component.clone();
+            } else {
+                return component;
+            }
+        });
+        newObject.name = this.name;
+        return newObject;
+    }
+
     addChild(node) {
         node.parent?.removeChild(node);
         this.children.push(node);

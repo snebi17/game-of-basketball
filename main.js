@@ -6,7 +6,7 @@ import { UpdateSystem } from './common/engine/systems/UpdateSystem.js';
 import { GLTFLoader } from './common/engine/loaders/GLTFLoader.js';
 import { UnlitRenderer } from './common/engine/renderers/UnlitRenderer.js';
 
-import { Camera, Model } from './common/engine/core.js';
+import { Camera, Model, Transform } from './common/engine/core.js';
 import { FirstPersonController } from './common/engine/controllers/FirstPersonController.js';
 
 import {
@@ -23,7 +23,7 @@ const renderer = new UnlitRenderer(canvas);
 await renderer.initialize();
 
 const loader = new GLTFLoader();
-await loader.load('./common/models/basketball/simple/court-edit_.gltf'); // load OK.
+await loader.load('./common/models/basketball/simple/court-ball.gltf'); // load OK.
 
 const scene = loader.loadScene(loader.defaultScene);
 if (!scene) {
@@ -41,12 +41,16 @@ camera.aabb = {
     max: [0.1, 0.1, 0.1],
 };
 
+const basketball = scene.find(node => node.name == 'Basketball');
+console.log(basketball);
+scene.removeChild(basketball);
+
 loader.loadNode('Basketball_Stand.001').isStatic = true;
 loader.loadNode('Backboard.001').isStatic = true;
 loader.loadNode('Hoop.001').isStatic = true;
-loader.loadNode('Basketball_Net.001').isStatic = true;
+// loader.loadNode('Basketball_Net.001').isStatic = true;
 
-loader.loadNode('Basketball_Net.002').isStatic = true;
+// loader.loadNode('Basketball_Net.002').isStatic = true;
 loader.loadNode('Basketball_Stand.002').isStatic = true;
 loader.loadNode('Backboard.002').isStatic = true;
 loader.loadNode('Hoop.002').isStatic = true;
@@ -129,6 +133,29 @@ gui.add(controller, 'acceleration', 1, 100);
 
 
 const crosshair = new Crosshair(document.getElementById('crosshair'));
-crosshair.show();
 
+document.addEventListener('mousedown', () => {
+    crosshair.timer.start();
+    crosshair.toggleMouseDown();
+    crosshair.updateCrosshairSize();
+});
+
+document.addEventListener('mouseup', () => {
+
+    var elapsedTime = crosshair.timer.stop();
+    console.log(`${elapsedTime} ms`);    
+    crosshair.toggleMouseDown();
+
+    (async () => {
+        await crosshair.updateCrosshairSize();
+        var newBall = basketball.clone();
+        console.log(newBall);
+        console.log(camera.getComponentOfType(FirstPersonController).aim);
+        newBall.getComponentOfType(Transform).rotation = camera.getComponentOfType(Transform).rotation;
+        newBall.getComponentOfType(Transform).translation = camera.getComponentOfType(Transform).translation.slice();
+        scene.addChild(newBall);    
+    })();
+});
+
+crosshair.show();
 document.querySelector('.loader-container').remove();

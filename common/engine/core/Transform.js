@@ -27,4 +27,11 @@ export class Transform {
         mat4.getScaling(this.scale, matrix);
     }
 
+    clone() {
+        var newObject = new this.constructor();
+        newObject.rotation = this.rotation.slice();
+        newObject.translation = this.translation.slice();
+        newObject.scale = this.scale.slice();
+        return newObject;
+    }
 }

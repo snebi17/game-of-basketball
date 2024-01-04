@@ -12,7 +12,7 @@ export class FirstPersonController {
         maxSpeed = 2,
         decay = 0.99999,
         pointerSensitivity = 0.002,
-        // aim = [0, 0, 0]
+        aim = [0, 0, -1]
     } = {}) {
         this.node = node;
         this.domElement = domElement;
@@ -27,6 +27,7 @@ export class FirstPersonController {
         this.maxSpeed = maxSpeed;
         this.decay = decay;
         this.pointerSensitivity = pointerSensitivity;
+        this.aim = aim;
 
         this.initHandlers();
     }
@@ -104,6 +105,9 @@ export class FirstPersonController {
             quat.rotateY(rotation, rotation, this.yaw);
             quat.rotateX(rotation, rotation, this.pitch);
             transform.rotation = rotation;
+
+            // update aim direction
+            vec3.transformQuat(this.aim, [0, 0, -1], rotation);
         }
     }
 

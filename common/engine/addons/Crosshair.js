@@ -1,6 +1,7 @@
 import { Timer } from './Timer.js'
 
 export class Crosshair {
+
     constructor(domObject) {
         this.domObject      = domObject;
         this.isMouseDown    = false;
@@ -8,18 +9,29 @@ export class Crosshair {
         this.timer          = new Timer();
         
         this.transitionDuration     = this.getTransitionTime();
-        
-        this.mouseDown              = this.mouseDown.bind(this);
-        this.mouseUp                = this.mouseUp.bind(this);
-        
-        document.addEventListener('mousedown', this.mouseDown);
-        document.addEventListener('mouseup', this.mouseUp);
     }
 
-    updateCrosshairSize() {
-        const newSize = this.isMouseDown ? 24 : 7; // Change the size as needed
+    async updateCrosshairSize() {
+        const newSize = this.isMouseDown ? 24 : 7; // Change the size of the crosshair.
         this.domObject.style.width = `${newSize}px`;
         this.domObject.style.height = `${newSize}px`;
+
+        // Store the initial state of the 'large' class
+        const initialLargeState = this.domObject.classList.contains('large');
+        
+        // Uses setTimeout to delay the color change.
+        await new Promise(resolve => {
+            setTimeout(() => {
+                    this.domObject.classList.toggle('large', this.isMouseDown);
+
+                    // Check if the 'large' class state changed
+                    const largeStateChanged = initialLargeState !== this.domObject.classList.contains('large');
+                    
+                    if (largeStateChanged) {
+                        resolve();
+                    }
+            }, 200);
+        });
     }
 
     toggleMouseDown() {
@@ -37,18 +49,5 @@ export class Crosshair {
     getTransitionTime() {
         const computedStyle = window.getComputedStyle(this.domObject);
         return parseFloat(computedStyle.transitionDuration)*1000;
-    }
-
-    mouseDown(event) {
-        this.timer.start();
-        this.toggleMouseDown();
-        this.updateCrosshairSize();
-    }
-
-    mouseUp(event) {
-        var elapsedTime = this.timer.lap();
-        console.log(`${elapsedTime} ms`);
-        this.toggleMouseDown();
-        this.updateCrosshairSize();
     }
 }
