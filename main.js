@@ -15,7 +15,9 @@ import {
 } from './common/engine/core/MeshUtils.js';
 
 import { Physics } from './common/engine/core/Physics.js';
+
 import { Crosshair } from './common/engine/addons/Crosshair.js';
+import { Basketball } from './common/engine/addons/Basketball.js';
 
 
 const canvas = document.querySelector('canvas');
@@ -40,10 +42,6 @@ camera.aabb = {
     min: [-0.1, -0.1, -0.1],
     max: [0.1, 0.1, 0.1],
 };
-
-const basketball = scene.find(node => node.name == 'Basketball');
-console.log(basketball);
-scene.removeChild(basketball);
 
 loader.loadNode('Basketball_Stand.001').isStatic = true;
 loader.loadNode('Backboard.001').isStatic = true;
@@ -103,6 +101,10 @@ scene.traverse(node => {
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
 });
 
+const basketball = scene.find(node => node.name == 'Basketball');
+scene.removeChild(basketball);
+// basketball.isDynamic = true;
+
 function update(time, dt) {
     scene.traverse(node => {
         for (const component of node.components) {
@@ -142,20 +144,24 @@ document.addEventListener('mousedown', () => {
 
 document.addEventListener('mouseup', () => {
 
-    var elapsedTime = crosshair.timer.stop();
+    const elapsedTime = crosshair.timer.stop();
     console.log(`${elapsedTime} ms`);    
     crosshair.toggleMouseDown();
 
     (async () => {
         await crosshair.updateCrosshairSize();
+        const camTransform = camera.getComponentOfType(Transform);
         var newBall = basketball.clone();
+        newBall.addComponent(new Basketball(newBall, scene, {
+            initialTranslation: camTransform.translation.slice(),
+            initialRotation: camTransform.rotation.slice(),
+            initialDirection: camera.getComponentOfType(FirstPersonController).aim.slice(),
+            power: elapsedTime/100
+        }));
         console.log(newBall);
-        console.log(camera.getComponentOfType(FirstPersonController).aim);
-        newBall.getComponentOfType(Transform).rotation = camera.getComponentOfType(Transform).rotation;
-        newBall.getComponentOfType(Transform).translation = camera.getComponentOfType(Transform).translation.slice();
-        scene.addChild(newBall);    
+        scene.addChild(newBall);
     })();
 });
 
-crosshair.show();
 document.querySelector('.loader-container').remove();
+crosshair.show();
