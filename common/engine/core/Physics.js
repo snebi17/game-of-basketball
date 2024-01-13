@@ -64,6 +64,7 @@ export class Physics {
         if (!isColliding) {
             return;
         }
+        
 
         // Move node A minimally to avoid collision.
         const diffa = vec3.sub(vec3.create(), bBox.max, aBox.min);
@@ -71,6 +72,8 @@ export class Physics {
 
         let minDiff = Infinity;
         let minDirection = [0, 0, 0];
+
+
         if (diffa[0] >= 0 && diffa[0] < minDiff) {
             minDiff = diffa[0];
             minDirection = [minDiff, 0, 0];

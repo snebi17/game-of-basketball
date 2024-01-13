@@ -86,6 +86,7 @@ export class UnlitRenderer extends BaseRenderer {
     }
 
     renderPrimitive(primitive) {
+
         const gl = this.gl;
 
         const { program, uniforms } = this.programs.unlit;

@@ -333,7 +333,7 @@ export class GLTFLoader {
         for (const attribute in spec.attributes) {
             accessors[attribute] = this.loadAccessor(spec.attributes[attribute]);
         }
-
+        
         // Helpers
         const position = accessors.POSITION;
         const texcoords = accessors.TEXCOORD_0;

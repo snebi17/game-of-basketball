@@ -18,6 +18,8 @@ export class Node {
                 return component;
             }
         });
+        newObject.aabb = this?.aabb;
+        newObject.isDynamic = this?.isDynamic;
         newObject.name = this.name;
         return newObject;
     }

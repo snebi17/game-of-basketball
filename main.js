@@ -18,6 +18,8 @@ import { Physics } from './common/engine/core/Physics.js';
 
 import { Crosshair } from './common/engine/addons/Crosshair.js';
 import { Basketball } from './common/engine/addons/Basketball.js';
+import { configureBall } from './common/engine/addons/HelperFunctions.js';
+import { BallPhysics } from './common/engine/addons/BallPhysics.js';
 
 
 const canvas = document.querySelector('canvas');
@@ -43,28 +45,37 @@ camera.aabb = {
     max: [0.1, 0.1, 0.1],
 };
 
-loader.loadNode('Basketball_Stand.001').isStatic = true;
-loader.loadNode('Backboard.001').isStatic = true;
-loader.loadNode('Hoop.001').isStatic = true;
-// loader.loadNode('Basketball_Net.001').isStatic = true;
 
-// loader.loadNode('Basketball_Net.002').isStatic = true;
-loader.loadNode('Basketball_Stand.002').isStatic = true;
-loader.loadNode('Backboard.002').isStatic = true;
-loader.loadNode('Hoop.002').isStatic = true;
+loader.loadNode('Base_floor').isStatic = true;
+loader.loadNode('Base_podium').isStatic = true;
 
 loader.loadNode('Base_fence.001').isStatic = true;
 loader.loadNode('Base_fence.002').isStatic = true;
 loader.loadNode('Base_fence.003').isStatic = true;
 loader.loadNode('Base_fence.004').isStatic = true;
 
-loader.loadNode('Base_podium').isStatic = true;
-loader.loadNode('Base_floor').isStatic = true;
+loader.loadNode('Base_fance_stand.001').isStatic = true;
+loader.loadNode('Base_fance_stand.002').isStatic = true;
+loader.loadNode('Base_fance_stand.003').isStatic = true;
+loader.loadNode('Base_fance_stand.004').isStatic = true;
+loader.loadNode('Base_fance_stand_poles.001').isStatic = true;
+loader.loadNode('Base_fance_stand_poles.002').isStatic = true;
+loader.loadNode('Base_fance_stand_poles.003').isStatic = true;
+loader.loadNode('Base_fance_stand_poles.004').isStatic = true;
 
-// loader.loadNode('Base_fance_stand.001').isStatic = true;
-// loader.loadNode('Base_fance_stand.002').isStatic = true;
-// loader.loadNode('Base_fance_stand.003').isStatic = true;
-// loader.loadNode('Base_fance_stand.004').isStatic = true;
+// loader.loadNode('Backboard_black.001').isStatic = true;
+loader.loadNode('Backboard_red.001').isStatic = true;
+loader.loadNode('Backboard_white.001').isStatic = true;
+loader.loadNode('Basketball_Stand.001').isStatic = true;
+// loader.loadNode('Basketball_Net.001').isStatic = true;
+// loader.loadNode('Hoop.001').isStatic = true;
+
+// loader.loadNode('Backboard_black.002').isStatic = true;
+loader.loadNode('Backboard_red.002').isStatic = true;
+loader.loadNode('Backboard_white.002').isStatic = true;
+loader.loadNode('Basketball_Stand.002').isStatic = true;
+// loader.loadNode('Basketball_Net.002').isStatic = true;
+// loader.loadNode('Hoop.002').isStatic = true;
 
 loader.loadNode('Benches.001').isStatic = true;
 loader.loadNode('Benches.002').isStatic = true;
@@ -82,14 +93,24 @@ loader.loadNode('Dust_Bin.002').isStatic = true;
 loader.loadNode('Dust_Bin.003').isStatic = true;
 loader.loadNode('Dust_Bin.004').isStatic = true;
 
-loader.loadNode('Light_Pillars.001').isStatic = true;
-loader.loadNode('Light_Pillars.002').isStatic = true;
-loader.loadNode('Light_Pillars.003').isStatic = true;
-loader.loadNode('Light_Pillars.004').isStatic = true;
+loader.loadNode('Light_Pillars.101').isStatic = true;
+loader.loadNode('Light_Pillars.102').isStatic = true;
+loader.loadNode('Light_Pillars.103').isStatic = true;
+loader.loadNode('Light_Pillars.201').isStatic = true;
+loader.loadNode('Light_Pillars.202').isStatic = true;
+loader.loadNode('Light_Pillars.203').isStatic = true;
+loader.loadNode('Light_Pillars.301').isStatic = true;
+loader.loadNode('Light_Pillars.302').isStatic = true;
+loader.loadNode('Light_Pillars.303').isStatic = true;
+loader.loadNode('Light_Pillars.401').isStatic = true;
+loader.loadNode('Light_Pillars.402').isStatic = true;
+loader.loadNode('Light_Pillars.403').isStatic = true;
 
 // loader.loadNode('Mesh_Bars').isStatic = true;
 
-const physics = new Physics(scene);
+
+console.log(scene);
+const physics = new BallPhysics(scene);
 // Calculates bounding boxes of nodes
 scene.traverse(node => {
     const model = node.getComponentOfType(Model);
@@ -101,9 +122,7 @@ scene.traverse(node => {
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
 });
 
-const basketball = scene.find(node => node.name == 'Basketball');
-scene.removeChild(basketball);
-// basketball.isDynamic = true;
+const basketball = configureBall(scene);
 
 function update(time, dt) {
     scene.traverse(node => {
@@ -158,7 +177,6 @@ document.addEventListener('mouseup', () => {
             initialDirection: camera.getComponentOfType(FirstPersonController).aim.slice(),
             power: elapsedTime/100
         }));
-        console.log(newBall);
         scene.addChild(newBall);
     })();
 });

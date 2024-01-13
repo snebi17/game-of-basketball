@@ -1,5 +1,4 @@
 import { vec3, quat } from '../../../lib/gl-matrix-module.js';
-
 import { Transform } from '../core/Transform.js';
 
 export class Basketball {
@@ -28,6 +27,12 @@ export class Basketball {
 
     update(t, dt) {
         vec3.scaleAndAdd(this.velocity, this.velocity, this.gravity, dt);
+
+        // If the ball is not moving it removes it self form the scene.
+        if (vec3.squaredLength(this.velocity) < 0.001) {
+            this.scene.removeChild(this.node);
+        }
+
         const transform = this.node.getComponentOfType(Transform);
         if (transform) {
             // Update translation based on velocity.
@@ -49,9 +54,10 @@ export class Basketball {
     }
 
     adjustDirection(throwAngle) {
-        const radians = -(throwAngle*Math.PI)/180;
+        const radians = (throwAngle*Math.PI)/180
+        const directionFactor = (this.direction[0] > 0)?1:-1; 
         const rotation = quat.create();
-        quat.rotateZ(rotation, rotation, radians);
+        quat.rotateZ(rotation, rotation, radians*directionFactor);
         vec3.transformQuat(this.direction, this.direction, rotation);
     }
 }
