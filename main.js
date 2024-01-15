@@ -58,24 +58,24 @@ loader.loadNode('Base_fance_stand.001').isStatic = true;
 loader.loadNode('Base_fance_stand.002').isStatic = true;
 loader.loadNode('Base_fance_stand.003').isStatic = true;
 loader.loadNode('Base_fance_stand.004').isStatic = true;
-loader.loadNode('Base_fance_stand_poles.001').isStatic = true;
-loader.loadNode('Base_fance_stand_poles.002').isStatic = true;
-loader.loadNode('Base_fance_stand_poles.003').isStatic = true;
-loader.loadNode('Base_fance_stand_poles.004').isStatic = true;
+// loader.loadNode('Base_fance_stand_poles.001').isStatic = true;
+// loader.loadNode('Base_fance_stand_poles.002').isStatic = true;
+// loader.loadNode('Base_fance_stand_poles.003').isStatic = true;
+// loader.loadNode('Base_fance_stand_poles.004').isStatic = true;
 
 // loader.loadNode('Backboard_black.001').isStatic = true;
 loader.loadNode('Backboard_red.001').isStatic = true;
-loader.loadNode('Backboard_white.001').isStatic = true;
+//loader.loadNode('Backboard_white.001').isStatic = true;
 loader.loadNode('Basketball_Stand.001').isStatic = true;
 // loader.loadNode('Basketball_Net.001').isStatic = true;
-// loader.loadNode('Hoop.001').isStatic = true;
+loader.loadNode('Hoop.001').isStatic = true;
 
 // loader.loadNode('Backboard_black.002').isStatic = true;
 loader.loadNode('Backboard_red.002').isStatic = true;
-loader.loadNode('Backboard_white.002').isStatic = true;
+//loader.loadNode('Backboard_white.002').isStatic = true;
 loader.loadNode('Basketball_Stand.002').isStatic = true;
 // loader.loadNode('Basketball_Net.002').isStatic = true;
-// loader.loadNode('Hoop.002').isStatic = true;
+loader.loadNode('Hoop.002').isStatic = true;
 
 loader.loadNode('Benches.001').isStatic = true;
 loader.loadNode('Benches.002').isStatic = true;

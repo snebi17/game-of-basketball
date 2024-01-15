@@ -10,10 +10,9 @@ export function configureBall(scene) {
 
     var scaleFactor = basketball.getComponentOfType(Transform).scale.slice();
 
-    vec3.scale(scaleFactor, scaleFactor, 1025)
+    vec3.scale(scaleFactor, scaleFactor, 1000)
     vec3.multiply(basketball.aabb.min, basketball.aabb.min, scaleFactor)
     vec3.multiply(basketball.aabb.max, basketball.aabb.max, scaleFactor)
-    console.log(basketball.aabb);
 
     return basketball;
 }
@@ -21,8 +20,9 @@ export function configureBall(scene) {
 // Möller–Trumbore intersection algorithm using cramers rule
 export function rayIntersectsTriangle(rayOrigin, rayVector, triangle) {
 
-    // debugger;
     const EPSILON = 0.0000001;
+
+    const normalizedRayVector = vec3.normalize(vec3.create(), rayVector);
 
     const vertex0 = triangle.vertex0.position;
     const vertex1 = triangle.vertex1.position;
@@ -31,7 +31,7 @@ export function rayIntersectsTriangle(rayOrigin, rayVector, triangle) {
     const edge1 = vec3.subtract(vec3.create(), vertex1, vertex0);
     const edge2 = vec3.subtract(vec3.create(), vertex2, vertex0);
 
-    const h = vec3.cross(vec3.create(), rayVector, edge2);
+    const h = vec3.cross(vec3.create(), normalizedRayVector, edge2);
     const a = vec3.dot(edge1, h);
 
     if (a > -EPSILON && a < EPSILON) {
@@ -47,7 +47,7 @@ export function rayIntersectsTriangle(rayOrigin, rayVector, triangle) {
     }
 
     const q = vec3.cross(vec3.create(), s, edge1);
-    const v = f * vec3.dot(rayVector, q);
+    const v = f * vec3.dot(normalizedRayVector, q);
 
     if (v < 0.0 || u + v > 1.0) {
         return false;
@@ -58,10 +58,14 @@ export function rayIntersectsTriangle(rayOrigin, rayVector, triangle) {
 
     if (t > EPSILON) {
         // Ray intersection
-        const intersectionPoint = vec3.scaleAndAdd(vec3.create(), rayOrigin, rayVector, t);
+        const intersectionPoint = vec3.scaleAndAdd(vec3.create(), rayOrigin, normalizedRayVector, t);
         return intersectionPoint;
     } else {
         // This means that there is a line intersection but not a ray intersection.
         return false;
     }
+}
+
+export function areEqualWithTolerance(a, b, epsilon = Number.EPSILON) {
+    return Math.abs(a - b) < epsilon;
 }
